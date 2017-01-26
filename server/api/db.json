@@ -16,9 +16,9 @@
       "description": "This is a lovely item"
     },
     {
-      "name": "hghg",
-      "description": "gfhg",
-      "id": 4
+      "id": 4,
+      "name": "FancyItem",
+      "description": "The fanciest damned item you've ever seen"
     }
   ],
   "widgets": [
@@ -36,6 +36,16 @@
       "id": 3,
       "name": "Widget 3",
       "price": 300
+    },
+    {
+      "name": "New widget update",
+      "price": "100",
+      "id": 4
+    },
+    {
+      "id": 5,
+      "name": "Widgenator 5000",
+      "price": "The best friggin' widget around"
     }
   ]
 }

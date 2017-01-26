@@ -1,9 +1,12 @@
+/// <reference path="../typings/index.d.ts" />
+
 import 'core-js';
 import 'zone.js/dist/zone';
 import {StoreModule} from '@ngrx/store';
 import {StoreDevtoolsModule} from '@ngrx/store-devtools';
 import {StoreLogMonitorModule, useLogMonitor} from '@ngrx/store-log-monitor';
 import {items} from './src/common/stores/items.store';
+import {widgets} from './src/common/stores/widgets.store';
 import {selectedItem} from './src/common/stores/selectedItem.store';
 import {selectedWidget} from './src/common/stores/selectedWidget.store';
 
@@ -26,7 +29,7 @@ import {routes} from './routes';
     ReactiveFormsModule,
     FormsModule,
     RouterModule.forRoot(routes),
-    StoreModule.provideStore({items, selectedItem, selectedWidget}),
+    StoreModule.provideStore({items, widgets, selectedItem, selectedWidget}),
     StoreDevtoolsModule.instrumentStore({
       monitor: useLogMonitor({
         visible: false,

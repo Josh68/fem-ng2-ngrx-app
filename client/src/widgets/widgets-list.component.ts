@@ -13,10 +13,17 @@ import {Widget} from './../common/models/widget.model.ts';
       <div class="mdl-card__supporting-text">
         {{widget.price}}
       </div>
+      <div class="mdl-card__menu">
+        <button (click)="deleted.emit(widget); $event.stopPropagation();"
+          class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+          <i class="material-icons">close</i>
+        </button>
+      </div>
     </div>
     `
 })
 export class WidgetsList {
   @Input()widgets: Widget[];
   @Output()selected = new EventEmitter();
+  @Output()deleted = new EventEmitter();
 }

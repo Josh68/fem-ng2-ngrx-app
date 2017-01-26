@@ -3,7 +3,7 @@ import {FormGroup, Validators, FormBuilder} from '@angular/forms';
 import {Widget} from "./../common/models/widget.model.ts";
 
 @Component({
-    selector: 'widget-details',
+    selector: 'widget-detail',
     template: `
   <div class="fem-card mdl-card mdl-shadow--2dp">
     <div class="mdl-card__title">
@@ -30,7 +30,11 @@ import {Widget} from "./../common/models/widget.model.ts";
               placeholder="Enter a price"
               class="mdl-textfield__input" type="text">
           </div>
-          <button type="submit" [disabled]="!widgetForm.valid" class="mdl-button mdl-js-button mdl-button--colored mdl-js-ripple-effect">Save</button>
+          
+          <div class="mdl-card__actions">
+              <button type="submit" [disabled]="!widgetForm.valid" class="mdl-button mdl-js-button mdl-button--colored mdl-js-ripple-effect" (click)="cancelled.emit(selectedWidget)">Cancel</button>
+              <button type="submit" [disabled]="!widgetForm.valid" class="mdl-button mdl-js-button mdl-button--colored mdl-js-ripple-effect" (click)="saved.emit(selectedWidget)">Save</button>
+          </div>
       </form>
     </div>
   </div>

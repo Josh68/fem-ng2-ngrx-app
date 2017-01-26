@@ -31,7 +31,7 @@ import {GadgetService} from '../common/services/gadget.service.ts'
       padding: 20px;
     }
   `],
-  providers: [ItemsService],
+  providers: [ItemsService, GadgetService],
   directives: [ItemsList, ItemDetail]
 })
 export class Items {
@@ -43,8 +43,8 @@ export class Items {
               private gadgetService: GadgetService,
               private store: Store<AppStore>) {
     this.items = itemsService.items;
-    this.selectedItem = store.select('selectedItem');
-    this.selectedItem.subscribe(v => console.log(v));
+    this.selectedItem = store.select<Item>('selectedItem');
+    this.selectedItem.subscribe(selItem => console.log('selected item', selItem));
 
     this.gadget = gadgetService.gadget;
 

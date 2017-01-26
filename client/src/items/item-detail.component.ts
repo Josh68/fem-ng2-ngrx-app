@@ -1,4 +1,5 @@
 import {Component, Input, Output, EventEmitter} from '@angular/core';
+import {FormGroup, Validators, FormBuilder} from '@angular/forms';
 import {Item} from '../common/models/item.model';
 
 @Component({
@@ -10,10 +11,12 @@ import {Item} from '../common/models/item.model';
       <h2 class="mdl-card__title-text" *ngIf="!selectedItem.id">Create New Item</h2>
     </div>
     <div class="mdl-card__supporting-text">
-      <form novalidate>
+      <form [formGroup]="itemForm"
+          (submit)="saved.emit(selectedItem)" novalidate>
           <div class="mdl-textfield mdl-js-textfield">
             <label>Item Name</label>
-            <input [(ngModel)]="selectedItem.name"
+            <input [(ngModel)]="selectedItem.name" 
+              formControlName="itemName"
               name="name"
               placeholder="Enter a name"
               class="mdl-textfield__input" type="text">
@@ -21,7 +24,8 @@ import {Item} from '../common/models/item.model';
 
           <div class="mdl-textfield mdl-js-textfield">
             <label>Item Description</label>
-            <input [(ngModel)]="selectedItem.description"
+            <input [(ngModel)]="selectedItem.description" 
+              formControlName="itemDescription"
               name="description"
               placeholder="Enter a description"
               class="mdl-textfield__input" type="text">
@@ -29,9 +33,9 @@ import {Item} from '../common/models/item.model';
       </form>
     </div>
     <div class="mdl-card__actions">
-        <button type="submit" (click)="cancelled.emit(selectedItem)"
+        <button type="submit" [disabled]="!itemForm.valid" (click)="cancelled.emit(selectedItem)"
           class="mdl-button mdl-js-button mdl-js-ripple-effect">Cancel</button>
-        <button type="submit" (click)="saved.emit(selectedItem)"
+        <button type="submit" [disabled]="!itemForm.valid" (click)="saved.emit(selectedItem)"
           class="mdl-button mdl-js-button mdl-button--colored mdl-js-ripple-effect">Save</button>
     </div>
   </div>
@@ -42,9 +46,20 @@ export class ItemDetail {
   selectedItem: Item;
   @Output() saved = new EventEmitter();
   @Output() cancelled = new EventEmitter();
+  itemForm: FormGroup;
+
+  constructor(private fb: FormBuilder) { }
 
   @Input() set item(value: Item){
+    console.log('item detail input', value);
     if (value) this.originalName = value.name;
     this.selectedItem = Object.assign({}, value);
+  }
+
+  ngOnInit() {
+    this.itemForm = this.fb.group({
+      itemName: [this.selectedItem.name, Validators.required],
+      itemDescription: [this.selectedItem.description, Validators.required]
+    });
   }
 }

@@ -15,7 +15,13 @@ export class ItemsService {
   items: Observable<Array<Item>>;
 
   constructor(private http: Http, private store: Store<AppStore>) {
-    this.items = store.select('items');
+    console.log('store', store);
+    let currentItems = store.select<Array<Item>>('items');
+    currentItems.subscribe(i => { //use subscribe here to log out items any time they change
+      console.log('items: ');
+      console.log(i);
+    });
+    this.items = currentItems;
   }
 
   loadItems() {
@@ -23,6 +29,12 @@ export class ItemsService {
       .map(res => res.json())
       .map(payload => ({ type: 'ADD_ITEMS', payload }))
       .subscribe(action => this.store.dispatch(action));
+    /*
+    // My understanding ... Here's the only subscribe, and once the action is dispatched
+    // the state, when updated, will trigger this.items (an observable) to be updated
+    // In the component, the async-bound (with a pipe) 'items' property is mapped to itemsService.items
+    // so when the observable updates, so will the bound property
+    */
   }
 
   saveItem(item: Item) {
