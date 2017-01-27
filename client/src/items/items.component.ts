@@ -10,6 +10,8 @@ import {ItemDetail} from './item-detail.component';
 import {Gadget} from '../common/models/gadget.model';
 import {GadgetService} from '../common/services/gadget.service.ts'
 
+import * as _ from 'lodash';
+
 @Component({
   selector: 'items',
   template: `
@@ -61,11 +63,28 @@ export class Items {
   }
 
   saveItem(item: Item) {
-    this.itemsService.saveItem(item);
+    const onSave = this.items.subscribe(i => { //monitor the save action on state
+      console.log('check identical: ', _.isEqual(i, this.items));
+      const updateSuccess = i.filter(_i => _.isEqual(_i, item)).length > 0; //check that the saved item is there
+      if (updateSuccess) { //if save succeeded
+        afterSuccess.call(this); //reset the form and cancel the temporary observer subscribe
+      }
+    });
 
-    // Generally, we would want to wait for the result of `itemsService.saveItem`
-    // before resetting the current item.
-    this.resetItem();
+    function afterSuccess() {
+      this.resetItem();
+      //saveUnsubscribe();
+    }
+
+    function saveUnsubscribe() { //check not already unsubscribed and unsubscribe
+      if (onSave.unsubscribe) {
+        onSave.unsubscribe();
+      }
+    }
+
+    this.itemsService.saveItem(item); //perform the save
+
+    setTimeout(saveUnsubscribe, 10000); //cleanup if needed
   }
 
   deleteItem(item: Item) {

@@ -17,8 +17,13 @@
     },
     {
       "id": 4,
-      "name": "FancyItem",
+      "name": "FancyItem Updated",
       "description": "The fanciest damned item you've ever seen"
+    },
+    {
+      "name": "Test Item",
+      "description": "here be a test item",
+      "id": 5
     }
   ],
   "widgets": [

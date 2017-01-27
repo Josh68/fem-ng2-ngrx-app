@@ -16,12 +16,11 @@ export class ItemsService {
 
   constructor(private http: Http, private store: Store<AppStore>) {
     console.log('store', store);
-    let currentItems = store.select<Array<Item>>('items');
-    currentItems.subscribe(i => { //use subscribe here to log out items any time they change
-      console.log('items: ');
-      console.log(i);
-    });
-    this.items = currentItems;
+    this.items = store.select<Array<Item>>('items');
+    // this.items.subscribe(i => { //use subscribe here to log out items any time they change
+    //   console.log('items: ');
+    //   console.log(i);
+    // });
   }
 
   loadItems() {
@@ -38,7 +37,7 @@ export class ItemsService {
   }
 
   saveItem(item: Item) {
-    (item.id) ? this.updateItem(item) : this.createItem(item);
+    return (item.id) ? this.updateItem(item) : this.createItem(item);
   }
 
   createItem(item: Item) {
