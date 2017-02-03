@@ -6,12 +6,14 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "sourceMap": true,
-    "suppressImplicitAnyIndexErrors":true
+    "suppressImplicitAnyIndexErrors":true,
+    "allowJs": true
   },
   "compileOnSave": false,
   "buildOnSave": false,
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "./node_modules"
   ],
   "filesGlob": [
     "client/**/*.ts",

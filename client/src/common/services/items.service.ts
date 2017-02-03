@@ -1,7 +1,10 @@
 import {Http, Headers} from '@angular/http';
-import {Injectable} from '@angular/core';
+import {Injectable, Inject} from '@angular/core';
+
+import LoadingService from './loading.service.ts';
+
 import {Store} from '@ngrx/store';
-import {Observable} from "rxjs/Observable";
+import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 
 import {AppStore} from '../models/appstore.model';
@@ -10,17 +13,19 @@ import {Item} from '../models/item.model';
 const BASE_URL = 'http://localhost:3000/items/';
 const HEADER = { headers: new Headers({ 'Content-Type': 'application/json' }) };
 
+import * as _ from 'lodash';
+
 @Injectable()
 export class ItemsService {
   items: Observable<Array<Item>>;
 
-  constructor(private http: Http, private store: Store<AppStore>) {
+  constructor(
+      private http: Http,
+      private store: Store<AppStore>,
+      private loadingService: LoadingService
+    ) {
     console.log('store', store);
-    this.items = store.select<Array<Item>>('items');
-    // this.items.subscribe(i => { //use subscribe here to log out items any time they change
-    //   console.log('items: ');
-    //   console.log(i);
-    // });
+    this.items = store.select<Array<Item>>('items').publish().refCount().share();
   }
 
   loadItems() {
@@ -37,6 +42,7 @@ export class ItemsService {
   }
 
   saveItem(item: Item) {
+    //this.loadingService.isLoading(true);
     return (item.id) ? this.updateItem(item) : this.createItem(item);
   }
 
@@ -48,11 +54,29 @@ export class ItemsService {
   }
 
   updateItem(item: Item) {
-    this.http.put(`${BASE_URL}${item.id}`, JSON.stringify(item), HEADER)
-      .subscribe(action => this.store.dispatch({ type: 'UPDATE_ITEM', payload: item }));
+    this.loadingService.isLoading(true);
+    const updated = this.http.put(`${BASE_URL}${item.id}`, JSON.stringify(item), HEADER)
+      .map(res => res.json())
+      .do(payload => {
+        if (_.isEqual(item, payload)) {
+          this.loadingService.isLoading(false);
+          return payload;
+        }
+        console.log(`error: ${payload}`); //really handle error and isLoading
+        return false;
+      }, error => {
+        console.log(`error: ${error}`); //really handle error and isLoading
+        return false;
+      });
+    updated.subscribe(payload => {
+        if (payload) {
+          this.store.dispatch({ type: 'UPDATE_ITEM', payload });
+        }
+      });
   }
 
   deleteItem(item: Item) {
+    //this.loadingService.isLoading(true);
     this.http.delete(`${BASE_URL}${item.id}`)
       .subscribe(action => this.store.dispatch({ type: 'DELETE_ITEM', payload: item }));
   }

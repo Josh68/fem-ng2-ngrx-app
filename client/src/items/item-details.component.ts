@@ -41,7 +41,7 @@ import {Item} from '../common/models/item.model';
   </div>
   `
 })
-export class ItemDetail {
+export class ItemDetails {
   originalName: string;
   selectedItem: Item;
   @Output() saved = new EventEmitter();

@@ -1,14 +1,16 @@
-import {Component} from '@angular/core';
+import {Component, OnInit, OnDestroy} from '@angular/core';
 import {Observable} from "rxjs/Observable";
+import {Subscription} from "rxjs/Subscription";
 import {Store} from '@ngrx/store';
-import {ItemsService} from '../common/services/items.service.ts';
+import {ItemsService} from '../common/services/items.service';
+import LoadingService from '../common/services/loading.service';
 import {AppStore} from '../common/models/appstore.model';
 import {Item} from '../common/models/item.model';
 import {ItemsList} from './items-list.component';
-import {ItemDetail} from './item-detail.component';
+import {ItemDetails} from './item-details.component';
 
 import {Gadget} from '../common/models/gadget.model';
-import {GadgetService} from '../common/services/gadget.service.ts'
+import {GadgetService} from '../common/services/gadget.service';
 
 import * as _ from 'lodash';
 
@@ -33,24 +35,29 @@ import * as _ from 'lodash';
       padding: 20px;
     }
   `],
-  providers: [ItemsService, GadgetService],
-  directives: [ItemsList, ItemDetail]
+  providers: [ItemsService, GadgetService, LoadingService],
+  entryComponents: [ItemsList, ItemDetails]
 })
-export class Items {
-  items: Observable<Array<Item>>;
-  selectedItem: Observable<Item>;
-  gadget: Observable<Gadget>;
+export class Items implements OnInit, OnDestroy {
+  public items: Observable<Array<Item>>;
+  public selectedItem: Observable<Item>;
+  public gadget: Observable<Gadget>;
+  private loadingServiceSubscription: Subscription
 
-  constructor(private itemsService: ItemsService,
-              private gadgetService: GadgetService,
-              private store: Store<AppStore>) {
+  constructor(
+    private itemsService: ItemsService,
+    private loadingService: LoadingService,
+    private gadgetService: GadgetService,
+    private store: Store<AppStore>
+  ) {
     this.items = itemsService.items;
     this.selectedItem = store.select<Item>('selectedItem');
-    this.selectedItem.subscribe(selItem => console.log('selected item', selItem));
+    //this.selectedItem.subscribe(selItem => console.log('selected item', selItem));
 
     this.gadget = gadgetService.gadget;
 
     itemsService.loadItems();
+    //this.items.connect();
   }
 
   resetItem() {
@@ -63,28 +70,29 @@ export class Items {
   }
 
   saveItem(item: Item) {
-    const onSave = this.items.subscribe(i => { //monitor the save action on state
-      console.log('check identical: ', _.isEqual(i, this.items));
-      const updateSuccess = i.filter(_i => _.isEqual(_i, item)).length > 0; //check that the saved item is there
-      if (updateSuccess) { //if save succeeded
-        afterSuccess.call(this); //reset the form and cancel the temporary observer subscribe
-      }
-    });
-
-    function afterSuccess() {
-      this.resetItem();
-      //saveUnsubscribe();
-    }
-
-    function saveUnsubscribe() { //check not already unsubscribed and unsubscribe
-      if (onSave.unsubscribe) {
-        onSave.unsubscribe();
-      }
-    }
+    // const onSave = this.items.subscribe(items => { //monitor the save action on state
+    //   console.log('check identical: ', _.isEqual(items, this.items));
+    //   const updateSuccess = items.filter(i => _.isEqual(i, item)).length > 0; //check that the saved item is there
+    //   console.log(`updateSuccess: ${updateSuccess}`);
+    //   if (updateSuccess) { //if save succeeded
+    //     afterSuccess.call(this); //reset the form and cancel the temporary observer subscribe
+    //   }
+    // });
+    //
+    // function afterSuccess() {
+    //   this.resetItem();
+    //   onsaveUnsubscribe();
+    // }
+    //
+    // function onsaveUnsubscribe() { //check not already unsubscribed and unsubscribe
+    //   if (onSave.unsubscribe) {
+    //     onSave.unsubscribe();
+    //   }
+    // }
 
     this.itemsService.saveItem(item); //perform the save
 
-    setTimeout(saveUnsubscribe, 10000); //cleanup if needed
+    // setTimeout(onsaveUnsubscribe, 10000); //cleanup if needed
   }
 
   deleteItem(item: Item) {
@@ -92,6 +100,19 @@ export class Items {
 
     // Generally, we would want to wait for the result of `itemsService.deleteItem`
     // before resetting the current item.
-    this.resetItem();
+    // this.resetItem();
+  }
+
+  ngOnInit() {
+    this.loadingServiceSubscription = this.loadingService.loading$
+      .subscribe(loading => {
+        if (!loading) {
+          this.resetItem();
+        }
+      });
+  }
+
+  ngOnDestroy() {
+    this.loadingServiceSubscription.unsubscribe();
   }
 }

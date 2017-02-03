@@ -1,8 +1,8 @@
 import {Observable} from "rxjs/Observable";
 import {Store} from '@ngrx/store';
 import {Component} from '@angular/core'
-import {WidgetsService} from '../common/services/widgets.service.ts';
-import {GadgetService} from '../common/services/gadget.service.ts';
+import {WidgetsService} from '../common/services/widgets.service';
+import {GadgetService} from '../common/services/gadget.service';
 import {WidgetsList} from './widgets-list.component';
 import {WidgetDetails} from './widget-details.component';
 import {AppStore} from "../common/models/appstore.model";
@@ -12,7 +12,6 @@ import {Gadget} from "../common/models/gadget.model";
 @Component({
   selector: 'widgets',
   template: `
-    <h4>Fix my inputs and outputs!</h4>
     <div class="mdl-grid items">
       <div class="mdl-cell mdl-cell--6-col">
         <widgets-list [widgets]="widgets | async"
@@ -29,7 +28,7 @@ import {Gadget} from "../common/models/gadget.model";
       padding: 20px;
     }
   `],
-  directives: [WidgetsList, WidgetDetails],
+  entryComponents: [WidgetsList, WidgetDetails],
   providers: [WidgetsService, GadgetService]
 })
 export class Widgets {

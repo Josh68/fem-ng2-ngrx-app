@@ -17,9 +17,9 @@ import {RouterModule} from '@angular/router';
 import {ReactiveFormsModule, FormsModule} from '@angular/forms';
 import {HttpModule} from '@angular/http';
 import {App} from './src/app';
-import {Items} from './src/items/items.component';
-import {Widgets} from './src/widgets/widgets.component';
-import {GadgetService} from "./src/common/services/gadget.service.ts";
+import {ItemsModule} from './src/items/items.module';
+import {WidgetsModule} from './src/widgets/widgets.module';
+import {GadgetService} from "./src/common/services/gadget.service";
 import {routes} from './routes';
 
 @NgModule({
@@ -30,15 +30,21 @@ import {routes} from './routes';
     FormsModule,
     RouterModule.forRoot(routes),
     StoreModule.provideStore({items, widgets, selectedItem, selectedWidget}),
+    // Note that you must instrument after importing StoreModule
+    StoreDevtoolsModule.instrumentOnlyWithExtension({
+      maxAge: 5
+    }),
     StoreDevtoolsModule.instrumentStore({
       monitor: useLogMonitor({
         visible: false,
         position: 'right'
       })
     }),
-    StoreLogMonitorModule
+    StoreLogMonitorModule,
+    ItemsModule,
+    WidgetsModule
   ],
-  declarations: [App, Items, Widgets],
+  declarations: [App],
   providers: [GadgetService],
   bootstrap: [App]
 })
