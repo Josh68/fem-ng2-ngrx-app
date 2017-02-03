@@ -35,8 +35,7 @@ import * as _ from 'lodash';
       padding: 20px;
     }
   `],
-  providers: [ItemsService, GadgetService, LoadingService],
-  entryComponents: [ItemsList, ItemDetails]
+  providers: [ItemsService, GadgetService, LoadingService]
 })
 export class Items implements OnInit, OnDestroy {
   public items: Observable<Array<Item>>;

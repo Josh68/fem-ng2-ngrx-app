@@ -28,7 +28,6 @@ import {Gadget} from "../common/models/gadget.model";
       padding: 20px;
     }
   `],
-  entryComponents: [WidgetsList, WidgetDetails],
   providers: [WidgetsService, GadgetService]
 })
 export class Widgets {
